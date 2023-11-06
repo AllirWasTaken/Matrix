@@ -9,6 +9,7 @@ namespace ALib{
     class Matrix{
     public:
         Matrix();
+        Matrix(unsigned x, unsigned y);
         Matrix(const std::vector<std::vector<double>> &newMatrix);
         Matrix& operator=(const Matrix& b);
         Matrix& operator=(const std::vector<std::vector<double>>& b);

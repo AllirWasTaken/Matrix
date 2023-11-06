@@ -202,3 +202,7 @@ std::ostream& ALib::operator<<(std::ostream& stream, const Matrix& matrix){
     }
     return stream;
 }
+
+Matrix::Matrix(unsigned int x, unsigned int y) {
+    SetSize(x,y);
+}
