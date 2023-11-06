@@ -182,7 +182,7 @@ Matrix Matrix::operator-(const ALib::Matrix &b) {
     result.SetSize(width,height);
     for(int y=0;y<height;y++){
         for(int x=0;x<width;x++){
-            result[y][x]=matrixData[y][x]+b.matrixData[y][x];
+            result[y][x]=matrixData[y][x]-b.matrixData[y][x];
         }
     }
 
