@@ -148,6 +148,32 @@ Matrix Matrix::operator+(const ALib::Matrix &b) {
     return result;
 }
 
+Matrix& Matrix::operator+=(const ALib::Matrix &b) {
+    if(width!=b.width||height!=b.height){
+        throw std::invalid_argument("Size of first matrix is not matching size of second matrix");
+    }
+    for(int y=0;y<height;y++){
+        for(int x=0;x<width;x++){
+            matrixData[y][x]+=b.matrixData[y][x];
+        }
+    }
+
+    return *this;
+}
+
+Matrix& Matrix::operator-=(const ALib::Matrix &b) {
+    if(width!=b.width||height!=b.height){
+        throw std::invalid_argument("Size of first matrix is not matching size of second matrix");
+    }
+    for(int y=0;y<height;y++){
+        for(int x=0;x<width;x++){
+            matrixData[y][x]-=b.matrixData[y][x];
+        }
+    }
+
+    return *this;
+}
+
 Matrix Matrix::operator-(const ALib::Matrix &b) {
     if(width!=b.width||height!=b.height){
         throw std::invalid_argument("Size of first matrix is not matching size of second matrix");

@@ -19,6 +19,8 @@ namespace ALib{
         Matrix& operator/=(const double &b);
         Matrix operator*(const Matrix& b);
         Matrix operator+(const Matrix& b);
+        Matrix& operator+=(const Matrix& b);
+        Matrix& operator-=(const Matrix& b);
         Matrix operator-(const Matrix& b);
         Matrix operator->*(const Matrix& b);
         friend std::ostream& operator<< (std::ostream& stream, const Matrix& matrix);
