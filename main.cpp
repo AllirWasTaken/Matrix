@@ -22,7 +22,7 @@ void TestAndSaveGEMM(const char* fileName){
         if(size==0)size=10;
 
 
-        std::vector<std::vector<double>> tempMatrix;
+        std::vector<std::vector<float>> tempMatrix;
         tempMatrix.resize(size);
         for(int y=0;y<size;y++){
             tempMatrix[y].resize(size);
@@ -30,7 +30,7 @@ void TestAndSaveGEMM(const char* fileName){
 
         for(int y=0;y<size;y++){
             for(int x=0;x<size;x++){
-                tempMatrix[y][x]=(double)rand();
+                tempMatrix[y][x]=(float)rand();
             }
         }
 
@@ -42,7 +42,7 @@ void TestAndSaveGEMM(const char* fileName){
         end=std::chrono::high_resolution_clock::now();
 
         size_t time=(end-start).count();
-        double ms= (double)time/1000000;
+        float ms= (float)time/1000000;
         fprintf(f,"%dx%d %.3lf ms\n",size,size,ms);
     }
 

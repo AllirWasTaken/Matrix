@@ -9,7 +9,7 @@
 
 using namespace ALib;
 
-Matrix::Matrix(const std::vector<std::vector<double>> &newMatrix) {
+Matrix::Matrix(const std::vector<std::vector<float>> &newMatrix) {
     unsigned a=newMatrix[0].size();
     for(int i=0;i<newMatrix.size();i++){
         if(a!=newMatrix[i].size()){
@@ -29,7 +29,7 @@ Matrix &Matrix::operator=(const ALib::Matrix &b) {
     return *this;
 }
 
-Matrix &Matrix::operator=(const std::vector<std::vector<double>> &b) {
+Matrix &Matrix::operator=(const std::vector<std::vector<float>> &b) {
     unsigned a=b[0].size();
     for(int i=0;i<b.size();i++){
         if(a!=b[i].size()){
@@ -42,7 +42,7 @@ Matrix &Matrix::operator=(const std::vector<std::vector<double>> &b) {
     return *this;
 }
 
-Matrix Matrix::operator*(const double &b) {
+Matrix Matrix::operator*(const float &b) {
     //TODO: Optimize
     Matrix result;
     result.SetSize(width,height);
@@ -64,7 +64,7 @@ void Matrix::SetSize(unsigned int x, unsigned int y) {
     height=y;
 }
 
-Matrix &Matrix::operator/=(const double &b) {
+Matrix &Matrix::operator/=(const float &b) {
     //TODO: Optimize
     for(int y=0;y<matrixData.size();y++){
         for(int x=0;x<matrixData[y].size();x++){
@@ -74,7 +74,7 @@ Matrix &Matrix::operator/=(const double &b) {
     return *this;
 }
 
-Matrix Matrix::operator/(const double &b) {
+Matrix Matrix::operator/(const float &b) {
     //TODO: Optimize
     Matrix result;
     result.SetSize(width,height);
@@ -86,15 +86,15 @@ Matrix Matrix::operator/(const double &b) {
     return result;
 }
 
-std::vector<double> &Matrix::operator[](unsigned int index){
+std::vector<float> &Matrix::operator[](unsigned int index){
     return matrixData[index];
 }
 
-const std::vector<double> &Matrix::operator[](unsigned int index) const {
+const std::vector<float> &Matrix::operator[](unsigned int index) const {
     return matrixData[index];
 }
 
-Matrix &Matrix::operator*=(const double &b) {
+Matrix &Matrix::operator*=(const float &b) {
     //TODO: Optimize
     for(int y=0;y<matrixData.size();y++){
         for(int x=0;x<matrixData[y].size();x++){
@@ -119,7 +119,7 @@ Matrix Matrix::operator*(const ALib::Matrix &b) {
 
     for(int y=0;y<result.height;y++){
         for(int x=0;x<result.width;x++){
-            double temp=0;
+            float temp=0;
             for(int z=0;z<width;z++){
                 temp+=matrixData[y][z]*b.matrixData[z][x];//*tempMatrix[x][z];
             }
