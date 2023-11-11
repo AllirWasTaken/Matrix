@@ -1,12 +1,56 @@
 #include "Matrix.h"
 
 #include <stdexcept>
-#include "immintrin.h"
+#include <immintrin.h>
+#include <smmintrin.h>
 
-//TODO: Implement SIMD, Multi threading, Test cache optimization, Local sub functions
+
+
+//TODO:Multi threading, Test cache optimization, Local sub functions
 
 
 using namespace ALib;
+
+
+
+
+
+std::vector<float> FastVectorSIMDOperationMul(const std::vector<float> &a, const std::vector<float> &b){
+    std::vector<float> result;
+    result.resize(a.size());
+
+    unsigned ptrAdd=0;
+    unsigned op256=a.size()/8;
+    unsigned op128=(a.size()%8)/4;
+
+    for(;op256;ptrAdd+=8,op256--){
+        auto aRegister= _mm256_loadu_ps(a.data()+ptrAdd);
+        auto bRegister= _mm256_loadu_ps(b.data()+ptrAdd);
+
+        auto cRegister= _mm256_mul_ps(aRegister,bRegister);
+
+        _mm256_storeu_ps(result.data()+ptrAdd,cRegister);
+
+    }
+
+    if(op128){
+        auto aRegister= _mm_loadu_ps(a.data()+ptrAdd);
+        auto bRegister= _mm_loadu_ps(b.data()+ptrAdd);
+
+        auto cRegister= _mm_mul_ps(aRegister,bRegister);
+
+        _mm_storeu_ps(result.data()+ptrAdd,cRegister);
+
+    }
+    for(;ptrAdd<result.size();ptrAdd++){
+        result[ptrAdd]=a[ptrAdd]*b[ptrAdd];
+    }
+
+
+
+    return result;
+
+}
 
 Matrix::Matrix(const std::vector<std::vector<float>> &newMatrix) {
     unsigned a=newMatrix[0].size();
@@ -64,7 +108,6 @@ void Matrix::SetSize(unsigned int x, unsigned int y) {
 }
 
 Matrix &Matrix::operator/=(const float &b) {
-    //TODO: Optimize
     for(int y=0;y<matrixData.size();y++){
         for(int x=0;x<matrixData[y].size();x++){
             matrixData[y][x]/=b;
@@ -74,7 +117,6 @@ Matrix &Matrix::operator/=(const float &b) {
 }
 
 Matrix Matrix::operator/(const float &b) {
-    //TODO: Optimize
     Matrix result;
     result.SetSize(width,height);
     for(int y=0;y<height;y++){
@@ -94,7 +136,6 @@ const std::vector<float> &Matrix::operator[](unsigned int index) const {
 }
 
 Matrix &Matrix::operator*=(const float &b) {
-    //TODO: Optimize
     for(int y=0;y<matrixData.size();y++){
         for(int x=0;x<matrixData[y].size();x++){
             matrixData[y][x]*=b;
@@ -104,7 +145,6 @@ Matrix &Matrix::operator*=(const float &b) {
 }
 
 Matrix Matrix::operator*(const ALib::Matrix &b) {
-    //TODO: Optimize
     if(width!=b.height){
         throw std::invalid_argument("Width of first matrix is not matching height for second matrix");
     }
@@ -112,19 +152,22 @@ Matrix Matrix::operator*(const ALib::Matrix &b) {
     result.SetSize(b.width,height);
 
 
-    //VeryBasic GEMM, transpose optimization
+    //Basic GEMM, SIMD optimization
 
-    //Matrix tempMatrix=b.Transpose();
+
+    Matrix tempMatrix=b.Transpose();
+
 
     for(int y=0;y<result.height;y++){
         for(int x=0;x<result.width;x++){
-            float temp=0;
-            for(int z=0;z<width;z++){
-                temp+=matrixData[y][z]*b.matrixData[z][x];//*tempMatrix[x][z];
+            auto tempVec=FastVectorSIMDOperationMul(matrixData[y],tempMatrix[x]);
+            for(int i;i<tempVec.size();i++){
+                result[y][x]+=tempVec[i];
             }
-            result[y][x]=temp;
         }
     }
+
+
 
 
     return result;

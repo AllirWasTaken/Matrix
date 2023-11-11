@@ -59,7 +59,7 @@ void TestAndSaveGEMM(const char* fileName){
 
 int main() {
 
-    TestAndSaveGEMM("VersionBasic.txt");
+    TestAndSaveGEMM("VersionSIMD.txt");
 
     return 0;
 }

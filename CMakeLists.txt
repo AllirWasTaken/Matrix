@@ -3,6 +3,12 @@ project(Matrix)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(Matrix main.cpp Matrix.cpp Matrix.h
-        Matrix.cpp
-        Matrix.h)
+add_executable(Matrix main.cpp
+        Matrix.h Matrix.cpp)
+
+
+
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
