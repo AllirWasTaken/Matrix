@@ -10,6 +10,7 @@ namespace ALib{
     public:
         Matrix();
         Matrix(const std::vector<std::vector<float>> &newMatrix);
+        Matrix(unsigned int x, unsigned int y);
         Matrix& operator=(const Matrix& b);
         Matrix& operator=(const std::vector<std::vector<float>>& b);
         Matrix operator*(const float &b);
@@ -19,6 +20,8 @@ namespace ALib{
         Matrix operator*(const Matrix& b);
         Matrix operator+(const Matrix& b);
         Matrix operator-(const Matrix& b);
+        Matrix& operator+=(const Matrix& b);
+        Matrix& operator-=(const Matrix& b);
         Matrix operator->*(const Matrix& b);
         friend std::ostream& operator<< (std::ostream& stream, const Matrix& matrix);
         Matrix Transpose() const;

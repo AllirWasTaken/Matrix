@@ -1,6 +1,5 @@
 #include "Matrix.h"
 
-#include <utility>
 #include <stdexcept>
 #include "immintrin.h"
 
@@ -189,7 +188,7 @@ Matrix Matrix::operator-(const ALib::Matrix &b) {
     return result;
 }
 
-Matrix Matrix::Transpose() const {
+Matrix Matrix::Transpose() const{
     Matrix result;
     result.SetSize(height,width);
     for(int y=0;y<height;y++){
@@ -215,7 +214,7 @@ unsigned int Matrix::Height() const {
     return height;
 }
 
-unsigned int Matrix::Width() const {
+unsigned int Matrix::Width() const{
     return width;
 }
 
