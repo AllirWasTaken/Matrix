@@ -5,16 +5,12 @@
 #include <smmintrin.h>
 
 
-
-//TODO:Multi threading, Test cache optimization, Local sub functions
-
-
 using namespace ALib;
 
 
 Matrix::Matrix(const std::vector<std::vector<float>> &newMatrix) {
     unsigned a=newMatrix[0].size();
-    for(int i=0;i<newMatrix.size();i++){
+    for(unsigned i=0;i<newMatrix.size();i++){
         if(a!=newMatrix[i].size()){
             throw std::invalid_argument("Matrix rows are not the same size");
         }
@@ -34,7 +30,7 @@ Matrix &Matrix::operator=(const ALib::Matrix &b) {
 
 Matrix &Matrix::operator=(const std::vector<std::vector<float>> &b) {
     unsigned a=b[0].size();
-    for(int i=0;i<b.size();i++){
+    for(unsigned i=0;i<b.size();i++){
         if(a!=b[i].size()){
             throw std::invalid_argument("Matrix rows are not the same size");
         }
@@ -46,11 +42,10 @@ Matrix &Matrix::operator=(const std::vector<std::vector<float>> &b) {
 }
 
 Matrix Matrix::operator*(const float &b) {
-    //TODO: Optimize
     Matrix result;
     result.SetSize(width,height);
-    for(int y=0;y<height;y++){
-        for(int x=0;x<width;x++){
+    for(unsigned y=0;y<height;y++){
+        for(unsigned x=0;x<width;x++){
             result[y][x]=this->matrixData[y][x]*b;
         }
     }
@@ -60,7 +55,7 @@ Matrix Matrix::operator*(const float &b) {
 void Matrix::SetSize(unsigned int x, unsigned int y) {
     if(!x||!y)return;
     matrixData.resize(y);
-    for(int i=0;i<y;i++){
+    for(unsigned i=0;i<y;i++){
         matrixData[i].resize(x);
     }
     width=x;
@@ -68,8 +63,8 @@ void Matrix::SetSize(unsigned int x, unsigned int y) {
 }
 
 Matrix &Matrix::operator/=(const float &b) {
-    for(int y=0;y<matrixData.size();y++){
-        for(int x=0;x<matrixData[y].size();x++){
+    for(unsigned y=0;y<matrixData.size();y++){
+        for(unsigned x=0;x<matrixData[y].size();x++){
             matrixData[y][x]/=b;
         }
     }
@@ -79,8 +74,8 @@ Matrix &Matrix::operator/=(const float &b) {
 Matrix Matrix::operator/(const float &b) {
     Matrix result;
     result.SetSize(width,height);
-    for(int y=0;y<height;y++){
-        for(int x=0;x<width;x++){
+    for(unsigned y=0;y<height;y++){
+        for(unsigned x=0;x<width;x++){
             result[y][x]=this->matrixData[y][x]/b;
         }
     }
@@ -112,47 +107,12 @@ Matrix Matrix::operator*(const ALib::Matrix &b) {
     result.SetSize(b.width,height);
 
 
-    //Basic GEMM, SIMD optimization
-
-
-    Matrix tempMatrix=b.Transpose();
-    unsigned vecSize=Width();
-    unsigned ptrAdd;
-    unsigned op256,op128=(vecSize%8)/4;
-
-    std::vector<float> tempVec;
-    tempVec.resize(vecSize);
 
     for(int y=0;y<result.height;y++){
         for(int x=0;x<result.width;x++){
-            op256=vecSize/8;
-            ptrAdd=0;
-            for(;op256;ptrAdd+=8,op256--){
-                auto aRegister= _mm256_loadu_ps(matrixData[y].data()+ptrAdd);
-                auto bRegister= _mm256_loadu_ps(b[x].data()+ptrAdd);
-
-                auto cRegister= _mm256_mul_ps(aRegister,bRegister);
-
-                _mm256_storeu_ps(tempVec.data()+ptrAdd,cRegister);
-
-            }
-
-            if(op128){
-                auto aRegister= _mm_loadu_ps(matrixData[y].data()+ptrAdd);
-                auto bRegister= _mm_loadu_ps(b[x].data()+ptrAdd);
-
-                auto cRegister= _mm_mul_ps(aRegister,bRegister);
-
-                _mm_storeu_ps(tempVec.data()+ptrAdd,cRegister);
-                ptrAdd+=4;
-            }
-            for(;ptrAdd<vecSize;ptrAdd++){
-                tempVec[ptrAdd]=matrixData[y][ptrAdd]*b[x][ptrAdd];
-            }
-
-
-            for(int i=0;i<vecSize;i++){
-                result[y][x]+=tempVec[i];
+            result[y][x]=0;
+            for(int z=0;z<width;z++){
+                result[y][x]+=matrixData[y][z]*b.matrixData[z][x];
             }
         }
     }
@@ -251,9 +211,9 @@ unsigned int Matrix::Width() const{
     return width;
 }
 
-std::ostream& ALib::operator<<(std::ostream& stream, const Matrix& matrix){
-    for(int y=0;y<matrix.Height();y++){
-        for(int x=0;x<matrix.Width();x++){
+std::ostream& operator<<(std::ostream& stream, const Matrix& matrix){
+    for(unsigned y=0;y<matrix.Height();y++){
+        for(unsigned x=0;x<matrix.Width();x++){
             stream<<matrix[y][x]<<" ";
         }
         stream<<std::endl;

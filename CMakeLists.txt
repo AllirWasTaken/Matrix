@@ -8,7 +8,7 @@ add_executable(Matrix main.cpp
 
 
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
