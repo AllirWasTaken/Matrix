@@ -12,46 +12,6 @@
 using namespace ALib;
 
 
-
-
-
-std::vector<float> FastVectorSIMDOperationMul(const std::vector<float> &a, const std::vector<float> &b){
-    std::vector<float> result;
-    result.resize(a.size());
-
-    unsigned ptrAdd=0;
-    unsigned op256=a.size()/8;
-    unsigned op128=(a.size()%8)/4;
-
-    for(;op256;ptrAdd+=8,op256--){
-        auto aRegister= _mm256_loadu_ps(a.data()+ptrAdd);
-        auto bRegister= _mm256_loadu_ps(b.data()+ptrAdd);
-
-        auto cRegister= _mm256_mul_ps(aRegister,bRegister);
-
-        _mm256_storeu_ps(result.data()+ptrAdd,cRegister);
-
-    }
-
-    if(op128){
-        auto aRegister= _mm_loadu_ps(a.data()+ptrAdd);
-        auto bRegister= _mm_loadu_ps(b.data()+ptrAdd);
-
-        auto cRegister= _mm_mul_ps(aRegister,bRegister);
-
-        _mm_storeu_ps(result.data()+ptrAdd,cRegister);
-
-    }
-    for(;ptrAdd<result.size();ptrAdd++){
-        result[ptrAdd]=a[ptrAdd]*b[ptrAdd];
-    }
-
-
-
-    return result;
-
-}
-
 Matrix::Matrix(const std::vector<std::vector<float>> &newMatrix) {
     unsigned a=newMatrix[0].size();
     for(int i=0;i<newMatrix.size();i++){
@@ -156,12 +116,42 @@ Matrix Matrix::operator*(const ALib::Matrix &b) {
 
 
     Matrix tempMatrix=b.Transpose();
+    unsigned vecSize=Width();
+    unsigned ptrAdd;
+    unsigned op256,op128=(vecSize%8)/4;
 
+    std::vector<float> tempVec;
+    tempVec.resize(vecSize);
 
     for(int y=0;y<result.height;y++){
         for(int x=0;x<result.width;x++){
-            auto tempVec=FastVectorSIMDOperationMul(matrixData[y],tempMatrix[x]);
-            for(int i=0;i<tempVec.size();i++){
+            op256=vecSize/8;
+            ptrAdd=0;
+            for(;op256;ptrAdd+=8,op256--){
+                auto aRegister= _mm256_loadu_ps(matrixData[y].data()+ptrAdd);
+                auto bRegister= _mm256_loadu_ps(b[x].data()+ptrAdd);
+
+                auto cRegister= _mm256_mul_ps(aRegister,bRegister);
+
+                _mm256_storeu_ps(tempVec.data()+ptrAdd,cRegister);
+
+            }
+
+            if(op128){
+                auto aRegister= _mm_loadu_ps(matrixData[y].data()+ptrAdd);
+                auto bRegister= _mm_loadu_ps(b[x].data()+ptrAdd);
+
+                auto cRegister= _mm_mul_ps(aRegister,bRegister);
+
+                _mm_storeu_ps(tempVec.data()+ptrAdd,cRegister);
+                ptrAdd+=4;
+            }
+            for(;ptrAdd<vecSize;ptrAdd++){
+                tempVec[ptrAdd]=matrixData[y][ptrAdd]*b[x][ptrAdd];
+            }
+
+
+            for(int i=0;i<vecSize;i++){
                 result[y][x]+=tempVec[i];
             }
         }

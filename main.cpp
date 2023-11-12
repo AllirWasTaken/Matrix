@@ -13,6 +13,7 @@ void TestAndSaveGEMM(const char* fileName){
 
 
     FILE *f= fopen(realFileName,"wt");
+    if(!f)return;
     free(realFileName);
 
     std::chrono::time_point<std::chrono::high_resolution_clock> start,end;
