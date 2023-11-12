@@ -107,6 +107,9 @@ Matrix Matrix::operator*(const ALib::Matrix &b) {
     result.SetSize(b.width,height);
 
 
+    //03 in compiler optimizes this better than any attempt to transpose or SIMD, only improvement could be seen in alignment and redoing vector lib
+    //which would take too much time for purpose of this library
+
 
     for(int y=0;y<result.height;y++){
         for(int x=0;x<result.width;x++){
