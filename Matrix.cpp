@@ -161,7 +161,7 @@ Matrix Matrix::operator*(const ALib::Matrix &b) {
     for(int y=0;y<result.height;y++){
         for(int x=0;x<result.width;x++){
             auto tempVec=FastVectorSIMDOperationMul(matrixData[y],tempMatrix[x]);
-            for(int i;i<tempVec.size();i++){
+            for(int i=0;i<tempVec.size();i++){
                 result[y][x]+=tempVec[i];
             }
         }
