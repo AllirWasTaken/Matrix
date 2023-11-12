@@ -1,8 +1,7 @@
 #include "Matrix.h"
 
 #include <stdexcept>
-#include <immintrin.h>
-#include <smmintrin.h>
+#include <time.h>
 
 
 using namespace ALib;
@@ -226,4 +225,37 @@ std::ostream& operator<<(std::ostream& stream, const Matrix& matrix){
 
 Matrix::Matrix(unsigned int x, unsigned int y) {
     SetSize(x,y);
+}
+
+Matrix Matrix::MultiplyIndexByIndex(const ALib::Matrix &b) {
+    if(height!=b.height||width!=b.width){
+        throw std::invalid_argument("Size of first matrix is not matching size of second matrix");
+    }
+    Matrix result(width,height);
+
+    for(unsigned y=0;y<height;y++){
+        for(unsigned x=0;x<width;x++){
+            result[y][x]=matrixData[y][x]*b.matrixData[y][x];
+        }
+    }
+    return result;
+}
+
+void Matrix::SetZero() {
+    for(unsigned y=0;y<height;y++){
+        for(unsigned x=0;x<width;x++){
+            matrixData[y][x]=0;
+        }
+    }
+}
+
+void Matrix::Randomize(float min, float max) {
+    srand(time(nullptr));
+
+    for(unsigned y=0;y<height;y++){
+        for(unsigned x=0;x<width;x++){
+            matrixData[y][x]=(((float)rand()/(float)RAND_MAX)*(max-min))+min;
+        }
+    }
+    
 }

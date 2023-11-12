@@ -10,7 +10,7 @@ namespace ALib{
     public:
         Matrix();
         Matrix(const std::vector<std::vector<float>> &newMatrix);
-        Matrix(unsigned int x, unsigned int y);
+        Matrix(unsigned int width, unsigned int height);
         Matrix& operator=(const Matrix& b);
         Matrix& operator=(const std::vector<std::vector<float>>& b);
         Matrix operator*(const float &b);
@@ -23,6 +23,9 @@ namespace ALib{
         Matrix& operator+=(const Matrix& b);
         Matrix& operator-=(const Matrix& b);
         Matrix operator->*(const Matrix& b);
+        Matrix MultiplyIndexByIndex(const Matrix &b);
+        void SetZero();
+        void Randomize(float min=-10.0f,float max =10.0f);
         friend std::ostream& operator<< (std::ostream& stream, const Matrix& matrix);
         Matrix Transpose() const;
         std::vector<float>& operator[](unsigned index);
